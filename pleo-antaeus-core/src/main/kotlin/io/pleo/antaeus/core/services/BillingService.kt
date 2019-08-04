@@ -71,6 +71,9 @@ class BillingService(private val dal: AntaeusDal, val paymentProvider: PaymentPr
         val billingHistoryId = createBillingStart(firstOfTheMonth.time)
         runBilling()
         finishBilling(billingHistoryId = billingHistoryId)
+        // once complete schedule the next month's cycle, this line is subtle but key
+        // (otherwise unless the service is restarted there won't be a next billing cycle)
+        scheduleNextPayments()
     }
 
     // abnormal use case if billing crashed somehow and needs continuation,
@@ -78,6 +81,9 @@ class BillingService(private val dal: AntaeusDal, val paymentProvider: PaymentPr
     private fun continueBilling(billingHistoryId: Int) {
        runBilling()
        finishBilling(billingHistoryId = billingHistoryId)
+       // once complete schedule the next month's cycle, this line is subtle but key
+       // (otherwise unless the service is restarted there won't be a next billing cycle)
+       scheduleNextPayments()
     }
 
     // Creates start record for bill processing for the given 1st of the month
@@ -106,11 +112,10 @@ class BillingService(private val dal: AntaeusDal, val paymentProvider: PaymentPr
                logger.error(e) {"Currency Mismatch for customer id ${invoice.customerId}, expected ${invoice.amount.currency}"}
             }
             catch (e: NetworkException) {
+               // TODO: a network error may resolve itself after some time, perhaps add a 
+               Thread.sleep(5000);
                logger.error(e) {"Network Error"}
             }
         }
-        // once complete schedule the next month's cycle, this line is subtle but key
-        // (otherwise unless the service is restarted there won't be a next billing cycle)
-        scheduleNextPayments()
     }
 }
