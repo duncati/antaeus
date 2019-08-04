@@ -10,7 +10,9 @@ import io.pleo.antaeus.models.Customer
 import io.pleo.antaeus.models.Invoice
 import io.pleo.antaeus.models.InvoiceStatus
 import io.pleo.antaeus.models.Money
+import io.pleo.antaeus.models.BillingHistory
 import org.jetbrains.exposed.sql.ResultRow
+import java.util.Date
 
 fun ResultRow.toInvoice(): Invoice = Invoice(
     id = this[InvoiceTable.id],
@@ -25,4 +27,10 @@ fun ResultRow.toInvoice(): Invoice = Invoice(
 fun ResultRow.toCustomer(): Customer = Customer(
     id = this[CustomerTable.id],
     currency = Currency.valueOf(this[CustomerTable.currency])
+)
+
+fun ResultRow.toBillingHistory(): BillingHistory = BillingHistory(
+    id = this[BillingHistoryTable.id],
+    start = Date(this[BillingHistoryTable.start]),
+    finish = Date(this[BillingHistoryTable.finish])
 )
