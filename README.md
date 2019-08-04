@@ -18,7 +18,9 @@ The BillingService handles 3 scenarios:
 2. What if payment processing was started and did not finish? Continue it?
 3. The normal use case; this month's billing completed so schedule next month's on the 1st
 
-I took some liberties with these last 2 scenarios opting to run payment processing for both. This helped in running the service locally. By deleting the billing history table, payment processing runs immediately (scenario 1). By updating the finish column to 0 (it's default value on row creation) payment processing attempts to continue where it left off (scenario 2). And once there's a billing history entry for the current month the Billing Service schedules the next payment processing time which is logged for visibility (scenario 3).
+I took some liberties with the first 2 scenarios opting to run payment processing for both. This helped in running the service locally. By deleting the billing history table, payment processing runs immediately (scenario 1). By updating the finish column to 0 (it's default value on row creation) payment processing attempts to continue where it left off (scenario 2). And once there's a billing history entry for the current month the Billing Service schedules the next payment processing time which is logged for visibility (scenario 3).
+
+Exception handling has room to improve. NetworkExceptions may go away with time, other than logging perhaps a sleep and pray approach can work. The other two exceptions where there's serious data issues (customer not found and currency mismatch) require data correction likely through human intervention. I chose log these errors and move on to other invoices.
 
 ## Instructions
 
