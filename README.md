@@ -14,9 +14,9 @@ Billing must be managed and executed correctly otherwise customers lose trust in
 
 The BillingService handles 3 scenarios:
 
-- \1) What if payment processing wasn't run on the 1st of the current month? Run it now?
-- \2) What if payment processing was started and did not finish? Continue it?
-- \3) The normal use case; this month's billing completed so schedule next month's on the 1st
+- 1) What if payment processing wasn't run on the 1st of the current month? Run it now?
+- 2) What if payment processing was started and did not finish? Continue it?
+- 3) The normal use case; this month's billing completed so schedule next month's on the 1st
 
 I took some liberties with these last 2 scenarios opting to run payment processing for both. This helped in running the service locally. By deleting the billing history table, payment processing runs immediately (scenario 1). By updating the finish column to 0 (it's default value on row creation) payment processing attempts to continue where it left off (scenario 2). And once there's a billing history entry for the current month the Billing Service schedules the next payment processing time which is logged for visibility (scenario 3).
 
